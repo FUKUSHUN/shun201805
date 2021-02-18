@@ -26,11 +26,11 @@ delta_s = 5 # データのスライス間隔 [seconds]
 epsilon = 10 # コミュニティ決定のパラメータ
 dzeta = 12 # コミュニティ決定のパラメータ
 leng = 1 # コミュニティ決定のパラメータ
-start = datetime.datetime(2019, 6, 10, 0, 0, 0)
-end = datetime.datetime(2019, 6, 20, 0, 0, 0)
-# target_list = ['20122','20129','20158','20170','20192','20197','20215','20267','20283'] # 2018/5/1 - 2018/7/31
+start = datetime.datetime(2018, 5, 1, 0, 0, 0)
+end = datetime.datetime(2018, 7, 31, 0, 0, 0)
+target_list = ['20122','20129','20158','20170','20192','20197','20215','20267','20283'] # 2018/5/1 - 2018/7/31
 # target_list = ['20113', '20118', '20126', '20170', '20255', '20295', '20299'] # 2018/9/10 - 2018/12/25
-target_list = ['20115', '20117', '20127', '20131', '20171', '20220', '20283', '20303'] # 2019/3/20 - 2019/7/3
+# target_list = ['20115', '20117', '20127', '20131', '20171', '20220', '20256', '20283', '20303'] # 2019/3/20 - 2019/7/3
 cows_record_file = os.path.abspath('../') + "/CowTagOutput/csv/" # 分析用のファイル
 change_point_file = "./synchronization/estrus_detection/"
 
@@ -53,11 +53,11 @@ def make_features():
         t_end = date + datetime.timedelta(days=1) + datetime.timedelta(hours=9) # 翌午前9時を終わりとする
         while (t < t_end):
             t_list.append(t)
-            interaction_graph = com_creater.make_interaction_graph(t, t+datetime.timedelta(minutes=delta_c), method="behavior", delta=delta_s, epsilon=epsilon, dzeta=dzeta) \
+            interaction_graph = com_creater.make_interaction_graph(t, t+datetime.timedelta(minutes=delta_c), method="position", delta=delta_s, epsilon=epsilon, dzeta=dzeta) \
                 if (t_start <= t) else np.array([[]]) # 重み付きグラフを作成
             community = com_creater.create_community(t, t+datetime.timedelta(minutes=delta_c), interaction_graph, delta=delta_s, leng=leng) \
                 if (t_start <= t) else [[]] # コミュニティを決定
-            # com_creater.visualize_position(t, t+datetime.timedelta(minutes=delta_c), community, target_cow_id='20170', delta=delta_s) # 位置情報とコミュニティをプロット1
+            com_creater.visualize_position(t, t+datetime.timedelta(minutes=delta_c), community, target_cow_id='20170', delta=delta_s) # 位置情報とコミュニティをプロット1
             community_graph = com_creater.get_community_graph(community)
             interaction_graph_list.append(interaction_graph)
             communities_list.append(community)

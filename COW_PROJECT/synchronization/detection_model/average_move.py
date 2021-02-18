@@ -54,16 +54,20 @@ def calculate_moving_average(score_day_dict, slide_interval, average_window):
     return idx_times, smoothed_scores
 
 if __name__ == "__main__":
-    filenames = ['20122', '20158', '20192', '20215']
+    filenames = ['20122', '20129', '20158', '20192', '20267']
     dirname = "./test/"
     delta = 2 # 平滑化の間隔
     for filename in filenames:
-        filepath = dirname + filename + '/' + filename + '_4.xlsx'
+        filepath = dirname + filename + '/' + filename + '_5.xlsx'
         df = pd.read_excel(filepath, header=None, names=['start', 'end', 'dict', 'score', 'total_second'], usecols=[0, 1, 2, 3, 4], sheet_name=filename)
         score_day_dict = shape_data(df)
-        time_list, score_list = calculate_moving_average(score_day_dict, 30, 30*3)
+        time_list, score_list = calculate_moving_average(score_day_dict, 5, 5)
     
         df = pd.DataFrame(zip(time_list, score_list), columns=['time', 'score'])
-        df.to_csv(dirname + str(filename) + '/tmp2.csv')
-        # plt.savefig(dirname + 'figure/' + filename + '.jpg')
+        df.to_csv(dirname + str(filename) + '/tmp_6.csv')
+        # fig = plt.figure(figsize=(16, 8))
+        # ax = fig.add_subplot(1,1,1)
+        # ax.bar(time_list, score_list, width=0.1)
+        # plt.show()
+        # plt.savefig(dirname + filename + '/' + filename + '.jpg')
         # plt.close()

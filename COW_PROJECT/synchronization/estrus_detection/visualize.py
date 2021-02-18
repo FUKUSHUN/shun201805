@@ -68,10 +68,9 @@ if __name__ == "__main__":
     cows_record_file = os.path.abspath('../') + "/CowTagOutput/csv/" # 分析用のファイル
     dir_name = './synchronization/estrus_detection/'
     # target_list = ['20122','20129','20158','20170','20192','20197','20215','20267','20283'] # 2018/5/1 - 2018/7/31
-    # target_list = ['20113', '20118', '20126', '20170', '20255', '20295', '20299'] # 2018/9/10 - 2018/12/25
-    target_list = ['20115', '20117', '20127', '20131', '20171', '20220', '20256', '20283', '20303'] # 2019/3/20 - 2019/7/3
-    target_list = ['20256']
-    visualize_start = datetime.datetime(2019, 4, 2, 0, 0, 0) # 軌跡画像の描画を開始する日
+    target_list = ['20113', '20118', '20126', '20170', '20255', '20295', '20299'] # 2018/9/10 - 2018/12/25
+    # target_list = ['20115', '20117', '20127', '20131', '20171', '20220', '20256', '20283', '20303'] # 2019/3/20 - 2019/7/3
+    visualize_start = datetime.datetime(2019, 3, 20, 0, 0, 0) # 軌跡画像の描画を開始する日
     visualize_end = datetime.datetime(2019, 6, 20, 0, 0, 0) # 軌跡画像の描画を終了する日
     score_df = pd.DataFrame([])
     for target_cow_id in target_list:
@@ -92,7 +91,7 @@ if __name__ == "__main__":
             start = date_start
             while (start < date_end): # 1日の範囲で
                 time_series.append(start)
-                end = start + datetime.timedelta(hours=10.5)
+                end = start + datetime.timedelta(hours=21)
                 partition = extract_list(score_list, start, end)
                 partition_list.append(partition) # 期間内のデータを一つのパーティションとしてリストに登録
                 start = end
@@ -108,12 +107,12 @@ if __name__ == "__main__":
         plot_maker = plotting.PlotMaker2D(xmin=None, xmax=None, ymin=None, ymax=None, title='estrus scores', xlabel='time_series', ylabel='score', figsize=(19.2, 10.8))
         plot_maker.adjust_margin(top=0.95, bottom=0.15, right=0.95, left=0.05)
         plot_maker.create_bar_graph(time_series, partition_score_list, width=0.4)
-        plot_maker.save_fig(dir_name + 'figure/' + target_cow_id + ".png")
+        plot_maker.save_fig(dir_name + 'figure/' + target_cow_id + ".jpg")
         # 最も安定的だった期間の軌跡描画を行うためのデータフレームを作成
         tmp_df = pd.concat([pd.Series(time_series, name='Time'), pd.Series(most_stable_list, name=target_cow_id)], axis=1)
         tmp_df = tmp_df.set_index('Time')
         score_df = pd.concat([score_df, tmp_df], axis=1)
-    # 軌跡描画を行う
-    for dt, row in score_df.iterrows():
-        if (visualize_start <= dt and dt < visualize_end):
-            visualize_adjectory(dt, row, target_list)
+    # # 軌跡描画を行う
+    # for dt, row in score_df.iterrows():
+    #     if (visualize_start <= dt and dt < visualize_end):
+    #         visualize_adjectory(dt, row, target_list)

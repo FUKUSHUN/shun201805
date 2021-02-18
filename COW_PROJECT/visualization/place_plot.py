@@ -42,8 +42,8 @@ class PlacePlotter:
         for i, pos in enumerate(pos_list):
             color = colors[color_list[i]%len(colors)] if color_list is not None else (255,255,255) # 色の指定があれば色を付けられる
             before_pos = former_list[i] if len(former_list) != 0 else pos
-            x_f, y_f = self._draw_circle(3, float(before_pos[0]), float(before_pos[1]), color) # 前回の場所
-            x, y = self._draw_circle(3, float(pos[0]), float(pos[1]), color) # 今回の場所
+            x_f, y_f = self._draw_circle(2, float(before_pos[0]), float(before_pos[1]), color) # 前回の場所
+            x, y = self._draw_circle(2, float(pos[0]), float(pos[1]), color) # 今回の場所
             cv2.line(self.image, (x_f, y_f), (x, y), color) # 線を引く
             caption = str(caption_list[i]) if caption_list is not None else "" # キャプションの指定があればキャプションを付けられる
             cv2.putText(self.image, caption, (x+10, y+10), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255,255,255), 1, cv2.LINE_AA)
@@ -53,8 +53,8 @@ class PlacePlotter:
                     if (i < j):
                         if (color_list[i] == color_list[j]):
                             color = colors[color_list[i]%len(colors)] if color_list is not None else (255,255,255)
-                            x1, y1 = self._draw_circle(3, float(pos1[0]), float(pos1[1]), color)
-                            x2, y2 = self._draw_circle(3, float(pos2[0]), float(pos2[1]), color)
+                            x1, y1 = self._draw_circle(2, float(pos1[0]), float(pos1[1]), color)
+                            x2, y2 = self._draw_circle(2, float(pos2[0]), float(pos2[1]), color)
                             cv2.line(self.image, (x1, y1), (x2, y2), color) # 2地点間を線で結ぶ
         cv2.putText(self.image, label, (5, 540), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255,255,255), 1, cv2.LINE_AA)
         return
@@ -117,6 +117,7 @@ class PlotMaker:
             video.write(img)
         # 出力
         video.release()
+        print("動画を出力しました -> ", self.video_filename)
         return
 
     def make_adjectory(self, df:pd.DataFrame):
@@ -125,6 +126,7 @@ class PlotMaker:
         images = self._make_sequence_images(df, "image", True) # 画像系列の取得
         adjectory_image = images[len(images)-1] # 最後の画像が軌跡画像
         cv2.imwrite(self.image_filename, adjectory_image) # 軌跡画像を保存
+        print("軌跡画像を出力しました -> ", self.image_filename)
         return
 
     def _make_sequence_images(self, df:pd.DataFrame, filetype:str, disp_adj:bool):
@@ -188,16 +190,16 @@ if __name__ == "__main__":
     dzeta = 12 # コミュニティ決定のパラメータ
     leng = 1 # コミュニティ決定のパラメータ
     cows_record_file = os.path.abspath('../') + "/CowTagOutput/csv/" # 分析用のファイル
-    date = datetime.datetime(2019, 4, 2, 0, 0, 0)
-    start_t = datetime.datetime(2019, 4, 2, 12, 0, 0)
-    end_t = datetime.datetime(2019, 4, 2, 13, 0, 0)
-    target_cow_id = '20295'
+    date = datetime.datetime(2018, 6, 17, 0, 0, 0)
+    start_t = datetime.datetime(2018, 6, 18, 4, 0, 0)
+    end_t = datetime.datetime(2018, 6, 18, 6, 50, 0)
+    target_cow_id = '20122'
 
     cow_id_list = my_utility.get_existing_cow_list(date, cows_record_file)
     com_creater = community_creater.CommunityCreater(date, cow_id_list)
 
-    interaction_graph = com_creater.make_interaction_graph(start_t, end_t, method="position", delta=delta_s, epsilon=epsilon, dzeta=dzeta)
-    community_list = com_creater.create_community(start_t, end_t, interaction_graph, delta=delta_s, leng=leng)
-    community = [com for com in community_list if target_cow_id in com][0]
-    com_creater.visualize_adjectory(start_t, end_t, community, target_cow_id=target_cow_id, delta=delta_s) # 軌跡をプロット
+    # interaction_graph = com_creater.make_interaction_graph(start_t, end_t, method="position", delta=delta_s, epsilon=epsilon, dzeta=dzeta)
+    # community_list = com_creater.create_community(start_t, end_t, interaction_graph, delta=delta_s, leng=leng)
+    # community = [com for com in community_list if target_cow_id in com][0]
+    com_creater.visualize_adjectory(start_t, end_t, ['20122', '20192'], target_cow_id=target_cow_id, delta=delta_s) # 軌跡をプロット
     # com_creater.visualize_position(start_t, end_t, community, target_cow_id=target_cow_id, delta=delta_s) # 位置情報とコミュニティをプロット
